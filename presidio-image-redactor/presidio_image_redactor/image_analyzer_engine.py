@@ -81,7 +81,7 @@ class ImageAnalyzerEngine:
         return bboxes
 
     @staticmethod
-    def get_text(self,image: object, ocr_kwargs: Optional[dict] = None, **text_analyzer_kwargs)->str:
+    def get_text(self, image: object, ocr_kwargs: Optional[dict] = None, **text_analyzer_kwargs) -> str:
        # Perform OCR
         perform_ocr_kwargs, ocr_threshold = self._parse_ocr_kwargs(ocr_kwargs)
         image, preprocessing_metadata = self.image_preprocessor.preprocess_image(image)
