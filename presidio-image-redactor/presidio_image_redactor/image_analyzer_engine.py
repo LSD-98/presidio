@@ -71,7 +71,7 @@ class ImageAnalyzerEngine:
         text = self.ocr.get_text_from_ocr_dict(ocr_result)
 
         analyzer_result = self.analyzer_engine.analyze(
-            text=text, language="en", **text_analyzer_kwargs
+            text=text, **text_analyzer_kwargs
         )
         allow_list = self._check_for_allow_list(text_analyzer_kwargs)
         bboxes = self.map_analyzer_results_to_bounding_boxes(
@@ -80,6 +80,21 @@ class ImageAnalyzerEngine:
 
         return bboxes
 
+    @staticmethod
+    def get_text(self,image: object, ocr_kwargs: Optional[dict] = None, **text_analyzer_kwargs)->str:
+        # Perform OCR
+        perform_ocr_kwargs, ocr_threshold = self._parse_ocr_kwargs(ocr_kwargs)
+        ocr_result = self.ocr.perform_ocr(image, **perform_ocr_kwargs)
+        ocr_result = self.remove_space_boxes(ocr_result)
+
+        # Apply OCR confidence threshold if it is passed in
+        if ocr_threshold:
+            ocr_result = self.threshold_ocr_result(ocr_result, ocr_threshold)
+
+        # Save Text
+        text = self.ocr.get_text_from_ocr_dict(ocr_result)
+        return text
+    
     @staticmethod
     def threshold_ocr_result(ocr_result: dict, ocr_threshold: float) -> dict:
         """Filter out OCR results below confidence threshold.
