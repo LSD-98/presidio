@@ -82,16 +82,22 @@ class ImageAnalyzerEngine:
 
     @staticmethod
     def get_text(self,image: object, ocr_kwargs: Optional[dict] = None, **text_analyzer_kwargs)->str:
-        # Perform OCR
+       # Perform OCR
         perform_ocr_kwargs, ocr_threshold = self._parse_ocr_kwargs(ocr_kwargs)
+        image, preprocessing_metadata = self.image_preprocessor.preprocess_image(image)
         ocr_result = self.ocr.perform_ocr(image, **perform_ocr_kwargs)
         ocr_result = self.remove_space_boxes(ocr_result)
+
+        if preprocessing_metadata and ("scale_factor" in preprocessing_metadata):
+            ocr_result = self._scale_bbox_results(
+                ocr_result, preprocessing_metadata["scale_factor"]
+            )
 
         # Apply OCR confidence threshold if it is passed in
         if ocr_threshold:
             ocr_result = self.threshold_ocr_result(ocr_result, ocr_threshold)
 
-        # Save Text
+        # Save text
         text = self.ocr.get_text_from_ocr_dict(ocr_result)
         return text
     
